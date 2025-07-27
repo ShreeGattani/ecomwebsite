@@ -2,20 +2,20 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import products from '../data/products';
-import Magnifier from 'react-magnifier';
 import './ProductDetail.css';
+import InnerImageZoom from 'react-inner-image-zoom';
+import 'react-inner-image-zoom/lib/InnerImageZoom/styles.css';
 
 const getImageUrl = (url, size) => {
-  // Replace w=...&h=... with new size
   return url.replace(/w=\d+/, `w=${size}`).replace(/h=\d+/, `h=${size}`);
 };
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
-  
+
   const product = products.find(p => p.id === parseInt(id));
-  
+
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
@@ -40,7 +40,6 @@ const ProductDetail = () => {
       alert('Please select both size and color');
       return;
     }
-    
     addToCart(product, selectedSize, selectedColor, quantity);
     alert('Product added to cart!');
   };
@@ -65,21 +64,17 @@ const ProductDetail = () => {
         <div className="product-content">
           <div className="product-gallery">
             <div className="main-image-container">
-              <Magnifier
+              <InnerImageZoom
                 src={product.images[selectedImage]}
-                zoomImgSrc={largeImg}
+                zoomSrc={largeImg} // optional high-res zoom
+                zoomType="hover"
+                zoomPreload={true}
+                alt={product.name}
                 width={400}
-                zoomFactor={2}
-                mgWidth={150}
-                mgHeight={150}
-                mgBorderWidth={2}
-                mgShape="square"
-                mgShowOverflow={true}
-                mgMouseOffsetX={0}
-                mgMouseOffsetY={0}
               />
+
             </div>
-            
+
             <div className="thumbnail-images">
               {product.images.map((image, index) => (
                 <img
@@ -133,14 +128,14 @@ const ProductDetail = () => {
               <div className="quantity-selection">
                 <h3>Quantity</h3>
                 <div className="quantity-controls">
-                  <button 
+                  <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="quantity-btn"
                   >
                     -
                   </button>
                   <span className="quantity">{quantity}</span>
-                  <button 
+                  <button
                     onClick={() => setQuantity(quantity + 1)}
                     className="quantity-btn"
                   >
@@ -150,7 +145,7 @@ const ProductDetail = () => {
               </div>
             </div>
 
-            <button 
+            <button
               className="add-to-cart-btn"
               onClick={handleAddToCart}
               disabled={!selectedSize || !selectedColor}
@@ -164,4 +159,4 @@ const ProductDetail = () => {
   );
 };
 
-export default ProductDetail; 
+export default ProductDetail;
